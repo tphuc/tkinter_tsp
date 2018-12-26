@@ -3,8 +3,8 @@ from random import sample
 
 class NNRoute:
 
-    @classmethod
-    def Solve(NNRoute, Nodes):
+    @staticmethod
+    def Solve(Nodes):
         _Nodes = Nodes.copy()
         """ reorder list of Nodes visit, chosing the closet city each turn"""
         routeNodes = []
@@ -22,8 +22,8 @@ class NNRoute:
             _Nodes.remove(currentNode)
         return routeNodes
 
-    @classmethod
-    def closetSearch(NNRoute, startObj, targetObj_ls):
+    @staticmethod
+    def closetSearch(startObj, targetObj_ls):
         """ 
         Take a StartObject and a list of TargetsObjects and calculate which one is closet
         return the Closet target
@@ -39,12 +39,12 @@ class NNRoute:
     
 
 class LocalSearch:
-    @classmethod
-    def _Opt2swap(LocalSearch, Route, i, k):
+    @staticmethod
+    def _Opt2swap(Route, i, k):
         return Route[:i+1] + Route[k:i:-1] + Route[k+1:]
 
-    @classmethod
-    def Opt2Solve(LocalSearch, Route):
+    @staticmethod
+    def Opt2Solve(Route):
         bestDistance = SumDistance([node.loc for node in Route])
         for i in range(1,len(Route)-2):
             for k in range(i+1, len(Route) - 1):
