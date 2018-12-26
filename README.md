@@ -5,11 +5,13 @@ Im writing this script for visualization the algorithms on my school project!
 for students mostly
 # Following rules
 #You should named the attribute of class Node like below
+```python
 class Node:
     def __init__(self, name, latitude, longtitude):
       self.name = name
       self.y = latitude
       self.x = longtitude
+```
 #The algorithm choice must return the list of Node object
 # Usage
 from Route_Visualizer import *
