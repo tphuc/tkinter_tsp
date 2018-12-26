@@ -21,5 +21,23 @@ window.addNodes(node_list)
 window.addAlgo({"2-opt": .<function address>., "NearestNeighbor": .<function address>.)
 window.run()
 ```
-
-# That's it
+# Customization your keyboard action binding
+```python
+class KEYBIND:
+    zoomin = "z"
+    zoomout = "x"
+    up = "w"
+    down = "s"
+    left = "a"
+    right = "d"
+    revert = '-'
+    deploy = '+'
+```
+# !
+the file RouteVisualizer.py is all what you need. I added others file just for testing purposes. (just proof of concept) .
+You can modify it to match your previous implementation. ^ ^
+my code usage :
+```bash
+./tsp.py vn_cities.csv
+```
+# That's it !
