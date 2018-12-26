@@ -18,7 +18,7 @@ class Node:
 from RouteVisualizer import *
 window = Window()
 window.addNodes(node_list)
-window.addAlgo({"2-opt": .<function address>., "NearestNeighbor": .<function address>.)
+window.addAlgo({"algo1_name": .<function address of algo1>., "algo2_name": .<function address of algo2>.) # example
 window.run()
 ```
 # Customization your keyboard action binding
