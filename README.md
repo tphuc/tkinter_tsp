@@ -14,10 +14,12 @@ class Node:
 ```
 #The algorithm choice must return the list of Node object
 # Usage
+```python
 from Route_Visualizer import *
 window = Window()
 window.addNodes(node_list)
 window.addAlgo({"2-opt": .<function address>., "NearestNeighbor": .<function address>.)
 window.run()
+```
 
 # That's it
