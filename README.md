@@ -4,7 +4,7 @@ The minimal visualization version with Tkinter for apply algorithms on TSP (Pyth
 I wrote this script for visualization the algorithms on my school project!
 For students mostly!
 # Following rules
-#You should named the attribute of class Node like below
+-You should named the attribute of class Node like below
 ```python
 class Node:
     def __init__(self, name, latitude, longtitude):
@@ -12,7 +12,7 @@ class Node:
       self.y = latitude
       self.x = longtitude
 ```
-#The algorithm choice must return the list of Node object
+-The algorithm choice take a list of Node as argument and must return a list of Node object
 # Usage
 ```python
 from RouteVisualizer import *
