@@ -26,6 +26,7 @@ class BODY:
     top3 = top1 + MARGIN.up*2
     top4 = top1 + MARGIN.up*3
     top5 = top1 + MARGIN.up*4
+    top6 = top1 + MARGIN.up*6
     middle = HEIGHT//2
     bottom1 = HEIGHT * 6/8
     bottom2 = HEIGHT * 7/8
@@ -67,6 +68,8 @@ class Window():
         self.linewidth = 0.05
         self.distance = 0
         self.algoSwitch = {}
+        self.AlgoChoices = []
+        self.AlgoNames = []
         ##############################################################
         self.button1 = Button(
             text='Show Route', command=self.enableshowroute, fg='darkblue', width=BODY.buttonwidth)
@@ -87,6 +90,11 @@ class Window():
             text="Revert", command=self.revert, width=BODY.buttonwidth, bd=2)
         self.revert_button.pack(fill=BOTH, expand=1)
         self.revert_button.place(x=MARGIN.left, y=BODY.bottom1)
+        ################################################################
+        self.sync_button = Button(
+             text='Sync', command=self.sync, width=BODY.buttonwidth, bd=2)
+        self.sync_button.pack(fill=BOTH, expand=1)
+        self.sync_button.place(x=MARGIN.left, y=BODY.top6+10)
         ################################################################
         self.distancedisplay = Label(text='total:'+str(self.distance))
         self.distancedisplay.place(x=MARGIN.left, y=BODY.middle)
@@ -132,7 +140,6 @@ class Window():
             self.display_route = False
 
     def addNodes(self, nodes=[], locations=[], names=[], append=False):
-
         if not append:
             self.Points = []
             Point.numbers = 0
@@ -140,7 +147,7 @@ class Window():
             if not self.originNodes:
                 self.originNodes = nodes
             self.Nodes = nodes
-            for node in nodes:
+            for node in self.Nodes:
                 self.Points.append(
                     Point(node.name, node.y, node.x, self.canvas))
         else:
@@ -152,15 +159,29 @@ class Window():
             point.y += self.HEIGHT//2
             point.y *= -1
 
-    def addAlgoOptions(self, algoswitch):
-        self.algoSwitch = algoswitch
-        names = list(self.algoSwitch.keys())
+    def __addAlgoOptions(self):
         self.algorithm = StringVar(root)
-        self.algorithm.set(names[0])
+        self.algorithm.set(self.AlgoNames[0])
         self.algorithms_dropdown = OptionMenu(
-            root, self.algorithm, names[0], *names[1:])
+            root, self.algorithm, self.AlgoNames[0], *self.AlgoNames[1:])
         self.algorithms_dropdown.config(bg='yellow', width=BODY.dropdownwidth)
         self.algorithms_dropdown.place(x=MARGIN.left, y=BODY.top4)
+
+    def addAlgoChoice(self, name, func , *args, returnid):
+        self.AlgoChoices.append(Algo(name, func, *args, returnid = returnid))
+        self.AlgoNames.append(name)
+
+    def deployAlgorithm(self):
+        for algo in self.AlgoChoices:
+            if algo.name == self.algorithm.get():
+                self.Nodes = algo.deploy()
+                break
+        
+        self.addNodes(self.Nodes)
+        self.distance = round(SumDistance(
+            [point.loc for point in self.Points]), 6)
+        self.distancedisplay.config(text="total: "+str(self.distance))
+        self.redraw(restorezoom=True)
 
     def plot(self):
         self._tocenter()
@@ -211,24 +232,21 @@ class Window():
             pass
         self.plot()
 
-    def deployAlgorithm(self):
-        func = self.algoSwitch.get(
-            self.algorithm.get(), lambda: print("Function not found!"))
-        self.Nodes = func(self.Nodes)
-        self.addNodes(self.Nodes)
-        self.distance = round(SumDistance(
-            [point.loc for point in self.Points]), 6)
-        self.distancedisplay.config(text="total: "+str(self.distance))
-        self.redraw(restorezoom=True)
-
     def revert(self):
         self.addNodes(self.originNodes)
         self.redraw(restorezoom=True)
 
+    def sync(self):
+        for algo in self.AlgoChoices:
+            if algo.returnid == 0:
+                algo.setinput(self.Nodes)
+
     def run(self):
+        self.__addAlgoOptions()
         self.canvas.delete("all")
         self.plot()
         mainloop()
+    
 
 
 class Point():
@@ -249,11 +267,11 @@ class Point():
         if Point.numbers == 1:
             self.color = 'blue'
             self.width *= 2
-        self.oval = self.canvas.create_oval(
+        self.oval = canvas.create_oval(
             self.x1, self.y1, self.x2, self.y2, width=self.width,
             fill='black', outline=self.color)
-        self.canvas.tag_bind(self.oval, "<Enter>", self.on_enter)
-        self.canvas.tag_bind(self.oval, "<Leave>", self.on_leave)
+        canvas.tag_bind(self.oval, "<Enter>", self.on_enter)
+        canvas.tag_bind(self.oval, "<Leave>", self.on_leave)
         self.namedisplay = None
 
     def doupdate(self):
@@ -275,3 +293,24 @@ class Point():
 
     def on_leave(self, event):
         self.canvas.delete(self.namedisplay)
+
+
+class Algo:
+    def __init__(self, name, func, *Agrs, returnid):
+        self.name = name
+        self.func = func
+        self.Agrs = Agrs
+        self.returnid = returnid
+
+    def deploy(self):
+        if type(self.Agrs) is tuple:
+            self.Agrs = self.func(*self.Agrs)
+        else:
+            self.Agrs = self.func(self.Agrs)
+        if self.returnid:
+            return self.Agrs[self.returnid]
+        else:
+            return self.Agrs
+    
+    def setinput(self, inp):
+        self.Agrs = inp
